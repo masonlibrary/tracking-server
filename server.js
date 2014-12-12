@@ -28,7 +28,7 @@ router.use(function(req, res, next) {
 });
 
 router.route('/').get(function(req, res) {
-	connection.query('select * from tracking', function(err, rows) {
+	connection.query('select * from tracking order by id desc', function(err, rows) {
 		if (err) { throw err; }
 		res.json(rows);
 	});
@@ -42,6 +42,12 @@ router.route('/').post(function(req, res) {
 		// note: mysql now() is used because a JS Date() object will use server time
 		// this server is on phoenix time, and mysql SHOULD be set to use US/Eastern
 		connection.query('insert into tracking set ?, timestamp = now()', fields, function(err) { if (err) { throw err; } });
+		// and return the current rows
+		connection.query('select * from tracking order by id desc', function(err, rows) {
+		if (err) { throw err; }
+		res.json(rows);
+	});
+
 	});
 });
 
